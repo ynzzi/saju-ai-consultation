@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: saju-ai-consultation
+  profiles:
+    active: local
+
+server:
+  port: 8080
+
+jwt:
+  secret: ${JWT_SECRET:change-this-local-secret-change-this-local-secret}
+  access-token-validity-ms: ${JWT_ACCESS_TOKEN_VALIDITY_MS:3600000}
+
+ai:
+  provider: ${AI_PROVIDER:mock}
+  openai:
+    api-key: ${OPENAI_API_KEY:}
+    model: ${OPENAI_MODEL:gpt-4o-mini}
+
+saju:
+  ai-limit-per-day: ${SAJU_AI_LIMIT_PER_DAY:20}
+  profile-cache-ttl-hours: ${SAJU_PROFILE_CACHE_TTL_HOURS:24}
