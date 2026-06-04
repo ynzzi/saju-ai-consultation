@@ -3,6 +3,10 @@ spring:
     name: saju-ai-consultation
   profiles:
     active: local
+  data:
+    redis:
+      repositories:
+        enabled: false
 
 server:
   port: 8080
@@ -20,3 +24,7 @@ ai:
 saju:
   ai-limit-per-day: ${SAJU_AI_LIMIT_PER_DAY:20}
   profile-cache-ttl-hours: ${SAJU_PROFILE_CACHE_TTL_HOURS:24}
+
+logging:
+  level:
+    org.springframework.data.repository.config: WARN
