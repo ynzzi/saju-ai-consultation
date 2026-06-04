@@ -111,6 +111,8 @@ curl -X POST http://localhost:8080/api/auth/login \
 
 ### 3. 사주 프로필 생성
 
+`gender`는 MVP 기준 `MALE`, `FEMALE`만 사용합니다.
+
 ```bash
 curl -X POST http://localhost:8080/api/profiles \
   -H "Authorization: Bearer $TOKEN" \

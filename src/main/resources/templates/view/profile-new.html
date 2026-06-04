@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프로필 등록 | Saju AI</title>
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+<header class="top-bar">
+    <a class="brand-mark" href="/view/profiles">Saju AI</a>
+    <nav class="top-actions">
+        <a class="ghost-button" href="/view/profiles">목록</a>
+        <button type="button" id="logoutButton" class="ghost-button">로그아웃</button>
+    </nav>
+</header>
+
+<main class="page-shell narrow">
+    <section class="panel">
+        <div class="page-heading compact">
+            <h1>프로필 등록</h1>
+        </div>
+
+        <form id="profileForm" class="form-stack">
+            <label>
+                프로필 이름
+                <input type="text" id="profileName" maxlength="60" required>
+            </label>
+            <div class="form-row">
+                <label>
+                    생년월일
+                    <input type="date" id="birthDate" required>
+                </label>
+                <label>
+                    출생시간
+                    <input type="time" id="birthTime" step="1" required>
+                </label>
+            </div>
+            <div class="form-row">
+                <label>
+                    양력/음력
+                    <select id="calendarType" required>
+                        <option value="SOLAR">양력</option>
+                        <option value="LUNAR">음력</option>
+                    </select>
+                </label>
+                <label>
+                    성별
+                    <select id="gender" required>
+                        <option value="FEMALE">여성</option>
+                        <option value="MALE">남성</option>
+                    </select>
+                </label>
+            </div>
+            <label>
+                출생지역
+                <input type="text" id="birthPlace" maxlength="120" placeholder="Seoul">
+            </label>
+            <p id="errorMessage" class="error-message" hidden></p>
+            <button type="submit" class="primary-button">등록</button>
+        </form>
+    </section>
+</main>
+<script src="/js/api.js"></script>
+<script src="/js/profile.js"></script>
+</body>
+</html>

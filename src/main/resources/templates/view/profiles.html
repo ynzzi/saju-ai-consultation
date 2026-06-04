@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프로필 목록 | Saju AI</title>
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+<header class="top-bar">
+    <a class="brand-mark" href="/view/profiles">Saju AI</a>
+    <nav class="top-actions">
+        <a class="secondary-button" href="/view/profiles/new">새 프로필 등록</a>
+        <button type="button" id="logoutButton" class="ghost-button">로그아웃</button>
+    </nav>
+</header>
+
+<main class="page-shell">
+    <section class="page-heading">
+        <h1>프로필 목록</h1>
+    </section>
+
+    <p id="errorMessage" class="error-message" hidden></p>
+    <section id="profilesContainer" class="profile-grid"></section>
+    <section id="emptyState" class="empty-card" hidden>
+        <p>등록된 프로필이 없습니다.</p>
+        <a class="primary-button" href="/view/profiles/new">새 프로필 등록</a>
+    </section>
+</main>
+<script src="/js/api.js"></script>
+<script src="/js/profile.js"></script>
+</body>
+</html>

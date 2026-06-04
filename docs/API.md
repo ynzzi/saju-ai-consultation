@@ -24,6 +24,11 @@ Authorization: Bearer {accessToken}
 }
 ```
 
+요청 필드 허용값:
+
+- `calendarType`: `SOLAR`, `LUNAR`
+- `gender`: `MALE`, `FEMALE`
+
 응답:
 
 ```json

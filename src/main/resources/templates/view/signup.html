@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입 | Saju AI</title>
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+<main class="auth-shell">
+    <section class="auth-card">
+        <div class="brand-block">
+            <span class="brand-mark">Saju AI</span>
+            <h1>회원가입</h1>
+        </div>
+
+        <form id="signupForm" class="form-stack">
+            <label>
+                이메일
+                <input type="email" id="email" autocomplete="email" required>
+            </label>
+            <label>
+                비밀번호
+                <input type="password" id="password" autocomplete="new-password" minlength="8" required>
+            </label>
+            <label>
+                닉네임
+                <input type="text" id="nickname" maxlength="50" required>
+            </label>
+            <p id="errorMessage" class="error-message" hidden></p>
+            <button type="submit" class="primary-button">회원가입</button>
+        </form>
+
+        <p class="sub-link">이미 계정이 있나요? <a href="/view/login">로그인</a></p>
+    </section>
+</main>
+<script src="/js/api.js"></script>
+<script src="/js/auth.js"></script>
+</body>
+</html>
