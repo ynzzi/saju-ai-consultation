@@ -13,8 +13,13 @@ spring:
       port: ${REDIS_PORT:6379}
       password: ${REDIS_PASSWORD:}
 
-ai:
-  provider: ${AI_PROVIDER:openai}
+app:
+  ai:
+    provider: ${APP_AI_PROVIDER:${AI_PROVIDER:openai}}
+    model: ${OPENAI_MODEL:gpt-5.5}
+
+openai:
+  api-key: ${OPENAI_API_KEY:}
 
 logging:
   level:

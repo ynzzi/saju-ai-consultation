@@ -35,6 +35,35 @@
 - Docker Compose
 - OpenAI API 연동 구조 및 Mock AI Client
 
+## AI Provider 설정
+
+local 환경은 기본적으로 `MockAiClient`를 사용합니다. API Key 없이도 회원가입, 프로필 생성, AI 상담 화면 흐름을 개발하고 테스트할 수 있습니다.
+
+사용 가능한 환경변수:
+
+- `APP_AI_PROVIDER`: `mock` 또는 `openai`
+- `OPENAI_MODEL`: 사용할 OpenAI 모델명, 기본값 `gpt-5.5`
+- `OPENAI_API_KEY`: OpenAI API Key
+
+실제 OpenAI 연동으로 실행하려면 환경변수로 값을 주입합니다. API Key는 절대 Git에 커밋하지 마세요.
+
+```bash
+OPENAI_API_KEY={your_api_key} APP_AI_PROVIDER=openai docker compose up --build
+```
+
+Mock으로 명시 실행:
+
+```bash
+APP_AI_PROVIDER=mock docker compose up --build
+```
+
+정책:
+
+- `APP_AI_PROVIDER=mock`: `MockAiClient` 사용
+- `APP_AI_PROVIDER=openai`: `OpenAiClient` 사용
+- `openai` provider에서 `OPENAI_API_KEY`가 비어 있으면 앱은 기동되지만 상담 요청 시 사용자에게 `AI 답변 생성 중 일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.` 메시지를 반환합니다.
+- prod에서 조용히 Mock으로 fallback하지 않습니다. 운영에서는 `APP_AI_PROVIDER=openai`와 `OPENAI_API_KEY`를 명확히 설정해야 합니다.
+
 ## 실행 방식
 
 ### 1. IntelliJ local 실행
@@ -276,7 +305,8 @@ curl http://localhost:8080/api/profiles/$PROFILE_ID \
 - `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`
 - `REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD`
 - `JWT_SECRET`
-- `AI_PROVIDER=mock|openai`
+- `APP_AI_PROVIDER=mock|openai`
+- `OPENAI_MODEL`
 - `OPENAI_API_KEY`
 
 ## 프로젝트 구조

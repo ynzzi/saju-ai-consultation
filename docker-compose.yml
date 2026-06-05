@@ -13,7 +13,9 @@ services:
       MYSQL_PASSWORD: saju_password
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      AI_PROVIDER: mock
+      APP_AI_PROVIDER: ${APP_AI_PROVIDER:-mock}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-5.5}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       JWT_SECRET: change-this-local-secret-change-this-local-secret
     depends_on:
       mysql:

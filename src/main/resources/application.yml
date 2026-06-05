@@ -15,11 +15,13 @@ jwt:
   secret: ${JWT_SECRET:change-this-local-secret-change-this-local-secret}
   access-token-validity-ms: ${JWT_ACCESS_TOKEN_VALIDITY_MS:3600000}
 
-ai:
-  provider: ${AI_PROVIDER:mock}
-  openai:
-    api-key: ${OPENAI_API_KEY:}
-    model: ${OPENAI_MODEL:gpt-4o-mini}
+app:
+  ai:
+    provider: ${APP_AI_PROVIDER:${AI_PROVIDER:mock}}
+    model: ${OPENAI_MODEL:gpt-5.5}
+
+openai:
+  api-key: ${OPENAI_API_KEY:}
 
 saju:
   ai-limit-per-day: ${SAJU_AI_LIMIT_PER_DAY:20}

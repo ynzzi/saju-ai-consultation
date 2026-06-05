@@ -127,8 +127,52 @@ JPA Repository는 계속 Spring Data JPA가 스캔하고, Redis는 캐시와 요
 ## 환경변수 누락 오류
 
 - dev/prod profile은 `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `REDIS_HOST`, `JWT_SECRET`이 필요합니다.
-- `AI_PROVIDER=openai`를 사용할 때는 `OPENAI_API_KEY`가 필요합니다.
+- `APP_AI_PROVIDER=openai`를 사용할 때는 `OPENAI_API_KEY`가 필요합니다.
 - 민감정보는 설정 파일에 직접 쓰지 말고 EC2 환경변수, Parameter Store, Secret Manager 등을 사용합니다.
+
+## OPENAI_API_KEY 누락
+
+local 기본값은 `APP_AI_PROVIDER=mock`이므로 API Key 없이도 동작합니다.
+
+`APP_AI_PROVIDER=openai`인데 `OPENAI_API_KEY`가 비어 있으면 앱은 기동되지만 AI 상담 요청 시 다음 사용자 메시지를 반환합니다.
+
+```text
+AI 답변 생성 중 일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.
+```
+
+서버 로그에는 `OpenAI provider is enabled but OPENAI_API_KEY is missing.` 경고가 남습니다.
+
+## OpenAI API 호출 실패
+
+네트워크 오류, API 응답 오류, 타임아웃, 모델명 오류가 발생하면 사용자에게는 내부 상세 원인을 노출하지 않습니다.
+
+확인할 항목:
+
+- `OPENAI_API_KEY`가 유효한지 확인합니다.
+- `OPENAI_MODEL`이 사용 가능한 모델명인지 확인합니다.
+- 서버에서 외부 네트워크 호출이 가능한지 확인합니다.
+- OpenAI API 사용량/한도 상태를 확인합니다.
+
+## provider 설정 오류
+
+사용 가능한 값은 다음 두 가지입니다.
+
+```text
+APP_AI_PROVIDER=mock
+APP_AI_PROVIDER=openai
+```
+
+다른 값을 설정하면 `AiClient` Bean이 생성되지 않아 애플리케이션 기동이 실패할 수 있습니다. local 개발에서는 `mock`, dev/prod 실제 연동에서는 `openai`를 사용합니다.
+
+## Docker Compose에서 OpenAI 환경변수가 전달되지 않는 경우
+
+Compose 실행 시 환경변수를 같은 명령에 함께 전달합니다.
+
+```bash
+OPENAI_API_KEY={your_api_key} APP_AI_PROVIDER=openai docker compose up --build
+```
+
+설정이 반영됐는지 확인하려면 `docker compose config`로 app 서비스의 environment 항목을 확인합니다. API Key는 터미널 출력이나 문서에 남기지 않도록 주의하세요.
 
 ## 운영 환경 ddl-auto 주의
 

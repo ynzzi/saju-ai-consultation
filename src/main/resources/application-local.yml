@@ -15,6 +15,14 @@ spring:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
 
+app:
+  ai:
+    provider: ${APP_AI_PROVIDER:${AI_PROVIDER:mock}}
+    model: ${OPENAI_MODEL:gpt-5.5}
+
+openai:
+  api-key: ${OPENAI_API_KEY:}
+
 logging:
   level:
     com.portfolio.saju: DEBUG

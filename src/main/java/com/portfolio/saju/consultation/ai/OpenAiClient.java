@@ -1,72 +1,93 @@
 package com.portfolio.saju.consultation.ai;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.OpenAIOkHttpClient;
+import com.openai.models.responses.Response;
+import com.openai.models.responses.ResponseCreateParams;
+import com.openai.models.responses.ResponseOutputItem;
+import com.openai.models.responses.ResponseOutputMessage;
 import com.portfolio.saju.common.exception.BusinessException;
 import com.portfolio.saju.common.exception.ErrorCode;
-import java.net.URI;
-import lombok.RequiredArgsConstructor;
+import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.util.StringUtils;
 
+@Slf4j
 @Component
-@RequiredArgsConstructor
-@ConditionalOnProperty(name = "ai.provider", havingValue = "openai")
+@ConditionalOnProperty(name = "app.ai.provider", havingValue = "openai")
 public class OpenAiClient implements AiClient {
 
-    private final ObjectMapper objectMapper;
+    private static final String USER_SAFE_ERROR_MESSAGE = "AI 답변 생성 중 일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.";
 
-    @Value("${ai.openai.api-key}")
-    private String apiKey;
+    private final String apiKey;
+    private final String model;
 
-    @Value("${ai.openai.model}")
-    private String model;
+    public OpenAiClient(
+            @Value("${openai.api-key:}") String apiKey,
+            @Value("${app.ai.model:gpt-5.5}") String model
+    ) {
+        this.apiKey = apiKey;
+        this.model = model;
+    }
 
     @Override
     public String generateAnswer(AiPrompt prompt) {
-        if (apiKey == null || apiKey.isBlank()) {
-            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR, "OPENAI_API_KEY is missing");
+        if (!StringUtils.hasText(apiKey)) {
+            log.warn("OpenAI provider is enabled but OPENAI_API_KEY is missing.");
+            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR, USER_SAFE_ERROR_MESSAGE);
         }
 
         try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setBearerAuth(apiKey);
-            headers.setContentType(MediaType.APPLICATION_JSON);
+            OpenAIClient client = OpenAIOkHttpClient.builder()
+                    .apiKey(apiKey)
+                    .build();
+            ResponseCreateParams params = ResponseCreateParams.builder()
+                    .model(model)
+                    .instructions(systemInstructions())
+                    .input(buildInput(prompt))
+                    .build();
 
-            ObjectNode body = objectMapper.createObjectNode();
-            body.put("model", model);
-            ArrayNode messages = body.putArray("messages");
-            messages.addObject()
-                    .put("role", "system")
-                    .put("content", "너는 사주 분석 정보를 참고해 현실적인 조언을 제공하는 한국어 상담 도우미야. 단정적 예언이나 의학/법률/투자 확답은 피한다.");
-            messages.addObject()
-                    .put("role", "user")
-                    .put("content", buildContent(prompt));
-
-            RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<String> response = restTemplate.postForEntity(
-                    URI.create("https://api.openai.com/v1/chat/completions"),
-                    new HttpEntity<>(body.toString(), headers),
-                    String.class
-            );
-            JsonNode root = objectMapper.readTree(response.getBody());
-            return root.path("choices").path(0).path("message").path("content").asText();
+            Response response = client.responses().create(params);
+            String outputText = extractOutputText(response);
+            if (!StringUtils.hasText(outputText)) {
+                log.warn("OpenAI response did not contain output text. model={}", model);
+                throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR, USER_SAFE_ERROR_MESSAGE);
+            }
+            return outputText.trim();
         } catch (BusinessException exception) {
             throw exception;
         } catch (Exception exception) {
-            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR, "AI response generation failed");
+            log.warn("OpenAI API call failed. model={}, error={}", model, exception.getMessage(), exception);
+            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR, USER_SAFE_ERROR_MESSAGE);
         }
     }
 
-    private String buildContent(AiPrompt prompt) {
+    private String systemInstructions() {
+        return """
+                너는 사주 분석 정보를 참고해 현실적인 조언을 제공하는 한국어 상담 도우미다.
+                사주/운세 해석은 참고용 관점으로 표현하고 단정적인 예언은 피한다.
+                사용자의 선택을 강요하지 말고, 건강/투자/법률 등 고위험 영역은 전문 상담을 대체하지 않는다고 안내한다.
+                프로필 분석 결과를 바탕으로 답하되, 현실적인 행동 조언을 포함한다.
+                답변은 4~8문장 정도로 간결하게 작성한다.
+                """;
+    }
+
+    private String extractOutputText(Response response) {
+        return response.output().stream()
+                .filter(ResponseOutputItem::isMessage)
+                .map(ResponseOutputItem::asMessage)
+                .map(ResponseOutputMessage::content)
+                .flatMap(contents -> contents.stream()
+                        .filter(ResponseOutputMessage.Content::isOutputText)
+                        .map(content -> content.asOutputText().text()))
+                .collect(Collectors.joining("\n"))
+                .trim();
+    }
+
+    private String buildInput(AiPrompt prompt) {
         return """
                 사용자 질문:
                 %s
