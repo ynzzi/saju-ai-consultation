@@ -103,7 +103,7 @@ function resolveErrorMessage(status, errorBody) {
         return "접근할 수 없는 프로필입니다.";
     }
     if (status === 429) {
-        return "오늘의 AI 상담 요청 횟수를 초과했습니다.";
+        return "오늘의 AI 상담 요청 횟수를 초과했습니다. 내일 다시 이용해주세요.";
     }
     if (errorBody && errorBody.message) {
         return errorBody.message;

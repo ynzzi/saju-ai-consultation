@@ -31,4 +31,9 @@ public class ViewController {
     public String profileDetail(@PathVariable Long profileId) {
         return "view/profile-detail";
     }
+
+    @GetMapping("/view/profiles/{profileId}/consultations")
+    public String consultations(@PathVariable Long profileId) {
+        return "view/consultations";
+    }
 }

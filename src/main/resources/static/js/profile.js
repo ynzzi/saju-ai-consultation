@@ -86,9 +86,17 @@ async function loadProfileDetail() {
         const profileId = getProfileIdFromPath();
         const profile = await apiFetch("/api/profiles/" + profileId);
         renderProfileDetail(profile);
+        bindConsultationLink(profileId);
         bindDeleteButton(profileId);
     } catch (error) {
         showError(error.message || "프로필 상세를 불러오지 못했습니다.");
+    }
+}
+
+function bindConsultationLink(profileId) {
+    const link = document.getElementById("consultationLink");
+    if (link) {
+        link.href = "/view/profiles/" + profileId + "/consultations";
     }
 }
 

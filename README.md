@@ -85,6 +85,24 @@ curl http://localhost:8080/api/health
 }
 ```
 
+## 화면 테스트 흐름
+
+- `GET /view/signup`: 회원가입
+- `GET /view/login`: 로그인
+- `GET /view/profiles`: 프로필 목록
+- `GET /view/profiles/new`: 프로필 등록
+- `GET /view/profiles/{profileId}`: 프로필 상세
+- `GET /view/profiles/{profileId}/consultations`: AI 상담
+
+브라우저 확인 순서:
+
+1. `/view/signup`에서 회원가입
+2. `/view/profiles/new`에서 프로필 생성
+3. `/view/profiles/{profileId}`에서 분석 결과 확인
+4. `AI 상담하기` 버튼 클릭
+5. 질문 입력 후 Mock AI 답변 확인
+6. 새로고침 후 상담 기록 유지 확인
+
 ## API 테스트 순서
 
 ### 1. 회원가입
@@ -161,6 +179,12 @@ curl http://localhost:8080/api/profiles/$PROFILE_ID/consultations \
   -H "Authorization: Bearer $TOKEN"
 ```
 
+브라우저 상담 화면에서는 같은 API를 호출합니다.
+
+```text
+/view/profiles/{profileId}/consultations
+```
+
 ## Redis 요청 제한 테스트
 
 local 환경의 일일 AI 상담 제한은 기본 20회입니다.
@@ -183,6 +207,12 @@ done
   "message": "Daily AI consultation limit exceeded",
   "timestamp": "2026-06-04T15:00:00"
 }
+```
+
+브라우저 상담 화면에서는 429 응답 시 질문 입력이 비활성화되고 다음 메시지가 표시됩니다.
+
+```text
+오늘의 AI 상담 요청 횟수를 초과했습니다. 내일 다시 이용해주세요.
 ```
 
 Redis key 형식:

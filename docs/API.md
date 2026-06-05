@@ -8,6 +8,15 @@ Base URL: `http://localhost:8080`
 Authorization: Bearer {accessToken}
 ```
 
+## 화면 URL
+
+- `GET /view/signup`
+- `GET /view/login`
+- `GET /view/profiles`
+- `GET /view/profiles/new`
+- `GET /view/profiles/{profileId}`
+- `GET /view/profiles/{profileId}/consultations`
+
 ## Auth
 
 ### POST `/api/auth/signup`
