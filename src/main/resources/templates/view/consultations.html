@@ -24,13 +24,31 @@
             <div class="page-heading compact">
                 <h1 id="profileName">AI 상담</h1>
             </div>
+            <dl class="compact-meta-list">
+                <div>
+                    <dt>생년월일</dt>
+                    <dd id="birthDate"></dd>
+                </div>
+                <div>
+                    <dt>출생시간</dt>
+                    <dd id="birthTime"></dd>
+                </div>
+                <div>
+                    <dt>양력/음력</dt>
+                    <dd id="calendarType"></dd>
+                </div>
+                <div>
+                    <dt>성별</dt>
+                    <dd id="gender"></dd>
+                </div>
+            </dl>
             <section class="analysis-section">
                 <h3>기본 성향 요약</h3>
                 <p id="analysisSummary"></p>
             </section>
-            <section class="analysis-section">
-                <h3>오행 요약</h3>
-                <p id="elementSummary"></p>
+            <section class="analysis-section recommended-section">
+                <h3>추천 질문</h3>
+                <div id="recommendedQuestions" class="question-chip-group"></div>
             </section>
         </aside>
 

@@ -350,6 +350,33 @@ textarea:focus {
     padding-left: 20px;
 }
 
+.question-chip-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.question-chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 36px;
+    padding: 7px 11px;
+    border: 1px solid rgba(107, 79, 216, 0.28);
+    border-radius: 8px;
+    background: #f5f2ff;
+    color: var(--primary);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.35;
+    cursor: pointer;
+}
+
+.question-chip:hover {
+    border-color: rgba(107, 79, 216, 0.7);
+    background: #eee8ff;
+}
+
 .consultation-layout {
     display: grid;
     grid-template-columns: 320px minmax(0, 1fr);
@@ -362,6 +389,36 @@ textarea:focus {
     top: 88px;
     display: grid;
     gap: 16px;
+}
+
+.compact-meta-list {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fbfbfe;
+}
+
+.compact-meta-list div {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.compact-meta-list dt {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.compact-meta-list dd {
+    margin: 0;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 800;
+    text-align: right;
 }
 
 .chat-panel {
@@ -427,6 +484,19 @@ textarea:focus {
     border: 1px solid var(--line);
 }
 
+.loading-message .chat-bubble {
+    color: var(--muted);
+    font-weight: 800;
+}
+
+.loading-message .chat-bubble::after {
+    content: "";
+    display: inline-block;
+    width: 18px;
+    text-align: left;
+    animation: loadingDots 1.2s steps(4, end) infinite;
+}
+
 .chat-time {
     color: var(--muted);
     font-size: 12px;
@@ -451,6 +521,22 @@ textarea:focus {
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border: 0;
+}
+
+@keyframes loadingDots {
+    0% {
+        content: "";
+    }
+    25% {
+        content: ".";
+    }
+    50% {
+        content: "..";
+    }
+    75%,
+    100% {
+        content: "...";
+    }
 }
 
 @media (max-width: 760px) {

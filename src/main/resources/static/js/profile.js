@@ -112,7 +112,7 @@ function renderProfileDetail(profile) {
     setText("elementSummary", profile.elementSummary);
     renderList("strengths", profile.strengths);
     renderList("cautions", profile.cautions);
-    renderList("recommendedQuestions", profile.recommendedQuestions);
+    renderRecommendedQuestionLinks(profile.id, profile.recommendedQuestions);
 }
 
 function bindDeleteButton(profileId) {
@@ -159,6 +159,19 @@ function renderList(id, values) {
         const item = document.createElement("li");
         item.textContent = value;
         list.appendChild(item);
+    });
+}
+
+function renderRecommendedQuestionLinks(profileId, values) {
+    const container = document.getElementById("recommendedQuestions");
+    container.innerHTML = "";
+
+    (values || []).forEach((value) => {
+        const link = document.createElement("a");
+        link.className = "question-chip";
+        link.href = "/view/profiles/" + profileId + "/consultations?question=" + encodeURIComponent(value);
+        link.textContent = value;
+        container.appendChild(link);
     });
 }
 

@@ -99,9 +99,10 @@ curl http://localhost:8080/api/health
 1. `/view/signup`에서 회원가입
 2. `/view/profiles/new`에서 프로필 생성
 3. `/view/profiles/{profileId}`에서 분석 결과 확인
-4. `AI 상담하기` 버튼 클릭
-5. 질문 입력 후 Mock AI 답변 확인
-6. 새로고침 후 상담 기록 유지 확인
+4. 추천 질문 버튼을 클릭해 AI 상담 화면으로 이동
+5. 질문 입력창에 추천 질문이 자동 입력되는지 확인
+6. `질문하기` 클릭 후 로딩 말풍선과 Mock AI 답변 확인
+7. 새로고침 후 상담 기록 유지 확인
 
 ## API 테스트 순서
 

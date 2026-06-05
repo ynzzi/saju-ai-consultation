@@ -20,6 +20,7 @@ async function loadConsultationPage(profileId) {
     try {
         const profile = await apiFetch("/api/profiles/" + profileId);
         renderConsultationProfile(profile);
+        fillQuestionFromQuery();
 
         const consultations = await apiFetch("/api/profiles/" + profileId + "/consultations");
         renderConsultations(consultations);
@@ -31,8 +32,12 @@ async function loadConsultationPage(profileId) {
 
 function renderConsultationProfile(profile) {
     setText("profileName", profile.profileName);
+    setText("birthDate", profile.birthDate);
+    setText("birthTime", profile.birthTime);
+    setText("calendarType", formatCalendarType(profile.calendarType));
+    setText("gender", formatGender(profile.gender));
     setText("analysisSummary", profile.analysisSummary);
-    setText("elementSummary", profile.elementSummary);
+    renderRecommendedQuestionButtons(profile.recommendedQuestions);
 }
 
 function renderConsultations(consultations) {
@@ -73,17 +78,23 @@ function bindConsultationForm() {
 
         setSubmitting(true);
         clearError();
+        clearEmptyChat();
+        const pendingQuestionMessage = appendUserQuestion(question);
+        const loadingMessage = appendLoadingMessage();
+        scrollChatToBottom();
 
         try {
             const consultation = await apiFetch("/api/profiles/" + currentProfileId + "/consultations", {
                 method: "POST",
                 body: JSON.stringify({ question })
             });
-            clearEmptyChat();
-            appendConsultation(consultation);
+            replaceLoadingMessageWithAnswer(loadingMessage, consultation);
             questionInput.value = "";
             scrollChatToBottom();
         } catch (error) {
+            removeLoadingMessage(loadingMessage);
+            removeLoadingMessage(pendingQuestionMessage);
+            restoreEmptyChatIfNeeded();
             if ((error.message || "").includes("오늘의 AI 상담 요청 횟수")) {
                 requestLocked = true;
                 disableQuestionForm();
@@ -106,10 +117,48 @@ function clearEmptyChat() {
     }
 }
 
+function restoreEmptyChatIfNeeded() {
+    const messages = document.getElementById("chatMessages");
+    if (messages.children.length > 0) {
+        return;
+    }
+
+    const empty = document.createElement("div");
+    empty.className = "empty-chat";
+    empty.textContent = "아직 상담 기록이 없습니다.";
+    messages.appendChild(empty);
+}
+
 function appendConsultation(consultation) {
     const messages = document.getElementById("chatMessages");
     messages.appendChild(createMessage("user", consultation.question, consultation.createdAt));
     messages.appendChild(createMessage("ai", consultation.answer, consultation.createdAt));
+}
+
+function appendUserQuestion(question) {
+    const messages = document.getElementById("chatMessages");
+    const questionMessage = createMessage("user", question, new Date().toISOString());
+    messages.appendChild(questionMessage);
+    return questionMessage;
+}
+
+function appendLoadingMessage() {
+    const messages = document.getElementById("chatMessages");
+    const loadingMessage = createMessage("ai", "답변을 생성하고 있습니다", new Date().toISOString());
+    loadingMessage.classList.add("loading-message");
+    messages.appendChild(loadingMessage);
+    return loadingMessage;
+}
+
+function replaceLoadingMessageWithAnswer(loadingMessage, consultation) {
+    const answerMessage = createMessage("ai", consultation.answer, consultation.createdAt);
+    loadingMessage.replaceWith(answerMessage);
+}
+
+function removeLoadingMessage(loadingMessage) {
+    if (loadingMessage) {
+        loadingMessage.remove();
+    }
 }
 
 function createMessage(type, content, createdAt) {
@@ -139,6 +188,35 @@ function bindProfileLink(profileId) {
     if (link) {
         link.href = "/view/profiles/" + profileId;
     }
+}
+
+function renderRecommendedQuestionButtons(values) {
+    const container = document.getElementById("recommendedQuestions");
+    container.innerHTML = "";
+
+    (values || []).forEach((value) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "question-chip";
+        button.textContent = value;
+        button.addEventListener("click", () => {
+            const questionInput = document.getElementById("question");
+            questionInput.value = value;
+            questionInput.focus();
+        });
+        container.appendChild(button);
+    });
+}
+
+function fillQuestionFromQuery() {
+    const question = new URLSearchParams(window.location.search).get("question");
+    if (!question) {
+        return;
+    }
+
+    const questionInput = document.getElementById("question");
+    questionInput.value = question;
+    questionInput.focus();
 }
 
 function setText(id, value) {
