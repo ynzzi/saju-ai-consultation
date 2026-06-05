@@ -110,6 +110,17 @@ phpMyAdmin 등으로 8080이 이미 사용 중이면 app 포트를 바꿔 실행
 APP_PORT=8081 docker compose up --build
 ```
 
+### 3. EC2 prod 배포 실행
+
+운영 배포는 `.env` 파일을 서버에 직접 만들고 prod compose를 사용합니다. 실제 `.env`는 Git에 커밋하지 않고, 저장소에는 [.env.example](.env.example)만 제공합니다.
+
+```bash
+cp .env.example .env
+docker compose -f docker-compose.prod.yml --env-file .env up --build -d
+```
+
+자세한 절차는 [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)를 참고하세요.
+
 ## Health Check
 
 ```bash
