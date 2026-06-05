@@ -97,4 +97,18 @@ public class SajuProfile extends BaseTimeEntity {
         this.cautions = cautions;
         this.recommendedQuestions = recommendedQuestions;
     }
+
+    public void updateAnalysis(
+            String analysisSummary,
+            String elementSummary,
+            String strengths,
+            String cautions,
+            String recommendedQuestions
+    ) {
+        this.analysisSummary = analysisSummary;
+        this.elementSummary = elementSummary;
+        this.strengths = strengths;
+        this.cautions = cautions;
+        this.recommendedQuestions = recommendedQuestions;
+    }
 }

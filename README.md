@@ -10,6 +10,7 @@
 - Redis 기반 동일 사주 입력 분석 결과 캐싱
 - 프로필 정보, 분석 결과, 이전 상담 기록을 포함한 AI 상담
 - Redis 기반 사용자별 일일 AI 상담 요청 제한
+- 프로필 상세 화면에서 기존 프로필 분석 결과 재생성
 - local/dev/prod 환경 분리
 - Docker Compose 기반 app, MySQL, Redis 실행
 
@@ -109,10 +110,11 @@ curl http://localhost:8080/api/health
 1. `/view/signup`에서 회원가입
 2. `/view/profiles/new`에서 프로필 생성
 3. `/view/profiles/{profileId}`에서 분석 결과 확인
-4. 추천 질문 버튼을 클릭해 AI 상담 화면으로 이동
-5. 질문 입력창에 추천 질문이 자동 입력되는지 확인
-6. `질문하기` 클릭 후 로딩 말풍선과 Mock AI 답변 확인
-7. 새로고침 후 상담 기록 유지 확인
+4. `분석 다시 생성` 버튼으로 최신 분석 결과 갱신
+5. 추천 질문 버튼을 클릭해 AI 상담 화면으로 이동
+6. 질문 입력창에 추천 질문이 자동 입력되는지 확인
+7. `질문하기` 클릭 후 로딩 말풍선과 Mock AI 답변 확인
+8. 새로고침 후 상담 기록 유지 확인
 
 ## API 테스트 순서
 
@@ -149,7 +151,7 @@ curl -X POST http://localhost:8080/api/profiles \
   -d '{
     "profileName": "내 프로필",
     "birthDate": "1998-03-15",
-    "birthTime": "09:30:00",
+    "birthTime": "09:30",
     "calendarType": "SOLAR",
     "gender": "FEMALE",
     "birthPlace": "Seoul"
@@ -171,6 +173,13 @@ curl http://localhost:8080/api/profiles \
 
 ```bash
 curl http://localhost:8080/api/profiles/$PROFILE_ID \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+분석 로직이 개선된 경우 기존 프로필을 삭제하지 않고 최신 분석 결과로 갱신할 수 있습니다. 프로필 기본 정보와 상담 기록은 유지됩니다.
+
+```bash
+curl -X POST http://localhost:8080/api/profiles/$PROFILE_ID/reanalyze \
   -H "Authorization: Bearer $TOKEN"
 ```
 

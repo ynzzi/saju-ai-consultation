@@ -32,6 +32,7 @@ public class SajuProfileService {
                 request.calendarType(),
                 request.gender()
         );
+        AnalysisText analysisText = toAnalysisText(analysis);
 
         SajuProfile profile = SajuProfile.builder()
                 .user(user)
@@ -41,11 +42,11 @@ public class SajuProfileService {
                 .calendarType(request.calendarType())
                 .gender(request.gender())
                 .birthPlace(request.birthPlace())
-                .analysisSummary(analysis.analysisSummary())
-                .elementSummary(analysis.elementSummary())
-                .strengths(join(analysis.strengths()))
-                .cautions(join(analysis.cautions()))
-                .recommendedQuestions(join(analysis.recommendedQuestions()))
+                .analysisSummary(analysisText.analysisSummary())
+                .elementSummary(analysisText.elementSummary())
+                .strengths(analysisText.strengths())
+                .cautions(analysisText.cautions())
+                .recommendedQuestions(analysisText.recommendedQuestions())
                 .build();
 
         return SajuProfileResponse.from(sajuProfileRepository.save(profile));
@@ -69,6 +70,26 @@ public class SajuProfileService {
         sajuProfileRepository.delete(profile);
     }
 
+    @Transactional
+    public SajuProfileResponse reanalyzeProfile(Long userId, Long profileId) {
+        SajuProfile profile = findOwnedProfile(userId, profileId);
+        SajuAnalysisResult analysis = sajuAnalysisService.analyze(
+                profile.getBirthDate(),
+                profile.getBirthTime(),
+                profile.getCalendarType(),
+                profile.getGender()
+        );
+        AnalysisText analysisText = toAnalysisText(analysis);
+        profile.updateAnalysis(
+                analysisText.analysisSummary(),
+                analysisText.elementSummary(),
+                analysisText.strengths(),
+                analysisText.cautions(),
+                analysisText.recommendedQuestions()
+        );
+        return SajuProfileResponse.from(profile);
+    }
+
     @Transactional(readOnly = true)
     public SajuProfile findOwnedProfile(Long userId, Long profileId) {
         return sajuProfileRepository.findByIdAndUserId(profileId, userId)
@@ -77,5 +98,24 @@ public class SajuProfileService {
 
     private String join(List<String> values) {
         return String.join("\n", values);
+    }
+
+    private AnalysisText toAnalysisText(SajuAnalysisResult analysis) {
+        return new AnalysisText(
+                analysis.analysisSummary(),
+                analysis.elementSummary(),
+                join(analysis.strengths()),
+                join(analysis.cautions()),
+                join(analysis.recommendedQuestions())
+        );
+    }
+
+    private record AnalysisText(
+            String analysisSummary,
+            String elementSummary,
+            String strengths,
+            String cautions,
+            String recommendedQuestions
+    ) {
     }
 }

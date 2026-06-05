@@ -212,6 +212,17 @@ textarea:focus {
     font-weight: 700;
 }
 
+.success-message {
+    margin: 0 0 12px;
+    padding: 12px 13px;
+    border: 1px solid #bde8cf;
+    border-radius: 8px;
+    background: #effaf3;
+    color: #176b3a;
+    font-size: 14px;
+    font-weight: 800;
+}
+
 .top-bar {
     position: sticky;
     top: 0;

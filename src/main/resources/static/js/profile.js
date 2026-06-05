@@ -87,10 +87,45 @@ async function loadProfileDetail() {
         const profile = await apiFetch("/api/profiles/" + profileId);
         renderProfileDetail(profile);
         bindConsultationLink(profileId);
+        bindReanalyzeButton(profileId);
         bindDeleteButton(profileId);
     } catch (error) {
         showError(error.message || "프로필 상세를 불러오지 못했습니다.");
     }
+}
+
+function bindReanalyzeButton(profileId) {
+    const reanalyzeButton = document.getElementById("reanalyzeButton");
+    if (!reanalyzeButton) {
+        return;
+    }
+
+    reanalyzeButton.addEventListener("click", async () => {
+        const confirmed = window.confirm("최신 기준으로 분석 결과를 다시 생성할까요?");
+        if (!confirmed) {
+            return;
+        }
+
+        clearError();
+        clearSuccess();
+        setButtonLoading(reanalyzeButton, true, "생성 중");
+
+        try {
+            const profile = await apiFetch("/api/profiles/" + profileId + "/reanalyze", {
+                method: "POST"
+            });
+            renderProfileDetail(profile);
+            bindConsultationLink(profileId);
+            showSuccess("분석 결과를 다시 생성했습니다.");
+        } catch (error) {
+            const message = error.message === "접근할 수 없는 프로필입니다."
+                    ? error.message
+                    : "분석 재생성 중 오류가 발생했습니다.";
+            showError(message);
+        } finally {
+            setButtonLoading(reanalyzeButton, false, "분석 다시 생성");
+        }
+    });
 }
 
 function bindConsultationLink(profileId) {
@@ -173,6 +208,29 @@ function renderRecommendedQuestionLinks(profileId, values) {
         link.textContent = value;
         container.appendChild(link);
     });
+}
+
+function showSuccess(message) {
+    const target = document.getElementById("successMessage");
+    if (!target) {
+        return;
+    }
+    target.textContent = message;
+    target.hidden = false;
+}
+
+function clearSuccess() {
+    const target = document.getElementById("successMessage");
+    if (!target) {
+        return;
+    }
+    target.textContent = "";
+    target.hidden = true;
+}
+
+function setButtonLoading(button, isLoading, text) {
+    button.disabled = isLoading;
+    button.textContent = text;
 }
 
 function escapeHtml(value) {

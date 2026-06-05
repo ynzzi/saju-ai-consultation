@@ -33,11 +33,6 @@ Authorization: Bearer {accessToken}
 }
 ```
 
-요청 필드 허용값:
-
-- `calendarType`: `SOLAR`, `LUNAR`
-- `gender`: `MALE`, `FEMALE`
-
 응답:
 
 ```json
@@ -81,12 +76,18 @@ Authorization: Bearer {accessToken}
 {
   "profileName": "내 프로필",
   "birthDate": "1998-03-15",
-  "birthTime": "09:30:00",
+  "birthTime": "09:30",
   "calendarType": "SOLAR",
   "gender": "FEMALE",
   "birthPlace": "Seoul"
 }
 ```
+
+요청 필드 허용값:
+
+- `birthTime`: `HH:mm`
+- `calendarType`: `SOLAR`, `LUNAR`
+- `gender`: `MALE`, `FEMALE`
 
 응답:
 
@@ -147,6 +148,45 @@ Authorization: Bearer {accessToken}
 인증: 필요
 
 응답: `POST /api/profiles` 응답과 동일한 구조
+
+### POST `/api/profiles/{profileId}/reanalyze`
+
+인증: 필요
+
+요청 헤더:
+
+```text
+Authorization: Bearer {accessToken}
+```
+
+요청 body: 없음
+
+동작:
+
+- 기존 프로필의 `birthDate`, `birthTime`, `calendarType`, `gender`를 기준으로 최신 `SajuAnalysisService` 분석을 다시 실행합니다.
+- `analysisSummary`, `elementSummary`, `strengths`, `cautions`, `recommendedQuestions`만 갱신합니다.
+- `profileName`, `birthDate`, `birthTime`, `calendarType`, `gender`, 상담 기록은 변경하지 않습니다.
+
+응답:
+
+```json
+{
+  "id": 1,
+  "profileName": "내 프로필",
+  "birthDate": "1998-03-15",
+  "birthTime": "09:30:00",
+  "calendarType": "SOLAR",
+  "gender": "FEMALE",
+  "birthPlace": "Seoul",
+  "analysisSummary": "양력 기준의 현실적 흐름을 중심으로 보면...",
+  "elementSummary": "MVP 규칙 기반 분석에서는...",
+  "strengths": ["아이디어를 빠르게 발견하고 가능성을 넓히는 힘"],
+  "cautions": ["시작은 빠르지만 마무리 기준이 흐려질 수 있음"],
+  "recommendedQuestions": ["성장 감각을 살릴 수 있는 업무 방식은 무엇인가요?"],
+  "createdAt": "2026-06-04T15:00:00",
+  "updatedAt": "2026-06-04T15:10:00"
+}
+```
 
 ### DELETE `/api/profiles/{profileId}`
 

@@ -47,6 +47,14 @@ public class SajuProfileController {
         return sajuProfileService.getProfile(userDetails.getId(), profileId);
     }
 
+    @PostMapping("/{profileId}/reanalyze")
+    public SajuProfileResponse reanalyzeProfile(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long profileId
+    ) {
+        return sajuProfileService.reanalyzeProfile(userDetails.getId(), profileId);
+    }
+
     @DeleteMapping("/{profileId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(

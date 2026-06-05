@@ -129,5 +129,5 @@ function normalizeTime(value) {
     if (!value) {
         return "";
     }
-    return value.length === 5 ? value + ":00" : value;
+    return value.length >= 5 ? value.substring(0, 5) : value;
 }
