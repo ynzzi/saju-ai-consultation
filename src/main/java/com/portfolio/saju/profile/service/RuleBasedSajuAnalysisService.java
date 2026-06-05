@@ -51,20 +51,300 @@ public class RuleBasedSajuAnalysisService implements SajuAnalysisService {
             CalendarType calendarType,
             Gender gender
     ) {
-        int selector = Math.floorMod(birthDate.getYear() + birthDate.getMonthValue() + birthTime.getHour(), 5);
-        String element = List.of("목", "화", "토", "금", "수").get(selector);
-        String calendarText = calendarType == CalendarType.SOLAR ? "양력" : "음력";
+        SeasonType season = resolveSeason(birthDate);
+        TimeEnergyType timeEnergy = resolveTimeEnergy(birthTime);
 
         return new SajuAnalysisResult(
-                "%s 기준 입력으로 볼 때, 변화에 반응하는 속도와 자기 기준을 세우는 힘이 함께 드러납니다.".formatted(calendarText),
-                "현재 MVP 분석에서는 %s 기운을 중심으로 균형을 해석합니다. 부족한 기운은 생활 리듬과 관계 방식에서 보완하는 관점으로 봅니다.".formatted(element),
-                List.of("상황을 빠르게 정리하는 힘", "책임감을 바탕으로 꾸준히 밀고 가는 태도", "관계 속 신뢰를 쌓는 능력"),
-                List.of("혼자 감당하려는 습관", "결정 전 과도한 고민", "컨디션이 흐트러질 때 말투가 단단해지는 경향"),
-                List.of("올해 일과 관계에서 가장 신경 써야 할 부분은?", "나에게 맞는 커리어 방향은?", "중요한 선택을 앞두고 어떤 기준을 세우면 좋을까?")
+                buildAnalysisSummary(season, timeEnergy, calendarType),
+                buildElementSummary(season, timeEnergy, calendarType),
+                buildStrengths(season, timeEnergy),
+                buildCautions(season, timeEnergy),
+                buildRecommendedQuestions(season, timeEnergy)
+        );
+    }
+
+    private SeasonType resolveSeason(LocalDate birthDate) {
+        int month = birthDate.getMonthValue();
+        if (month >= 3 && month <= 5) {
+            return SeasonType.SPRING;
+        }
+        if (month >= 6 && month <= 8) {
+            return SeasonType.SUMMER;
+        }
+        if (month >= 9 && month <= 11) {
+            return SeasonType.AUTUMN;
+        }
+        return SeasonType.WINTER;
+    }
+
+    private TimeEnergyType resolveTimeEnergy(LocalTime birthTime) {
+        int hour = birthTime.getHour();
+        if (hour >= 0 && hour < 6) {
+            return TimeEnergyType.DAWN;
+        }
+        if (hour >= 6 && hour < 12) {
+            return TimeEnergyType.MORNING;
+        }
+        if (hour >= 12 && hour < 18) {
+            return TimeEnergyType.AFTERNOON;
+        }
+        return TimeEnergyType.NIGHT;
+    }
+
+    private String buildAnalysisSummary(SeasonType season, TimeEnergyType timeEnergy, CalendarType calendarType) {
+        String calendarPerspective = calendarType == CalendarType.SOLAR
+                ? "양력 기준의 현실적 흐름을 중심으로 보면"
+                : "음력 기준의 전통적 흐름을 중심으로 보면";
+
+        return ("%s, %s의 %s 성향과 %s의 %s 에너지가 함께 드러납니다. "
+                + "새로운 일을 바라볼 때는 %s을 살리되, 실제 선택에서는 %s을 함께 점검하는 방식이 잘 맞습니다.")
+                .formatted(
+                        calendarPerspective,
+                        season.label(),
+                        season.theme(),
+                        timeEnergy.label(),
+                        timeEnergy.theme(),
+                        season.primaryTrait(),
+                        timeEnergy.decisionHint()
+                );
+    }
+
+    private String buildElementSummary(SeasonType season, TimeEnergyType timeEnergy, CalendarType calendarType) {
+        String calendarTone = calendarType == CalendarType.SOLAR
+                ? "실용적인 선택과 현재의 우선순위"
+                : "내면의 리듬과 관계 속 균형";
+
+        return ("MVP 규칙 기반 분석에서는 생월을 계절 오행의 흐름으로 해석합니다. "
+                + "%s은 %s 기운과 연결되어 %s이 강점으로 나타나기 쉽고, 출생시간의 %s 성향은 %s을 더합니다. "
+                + "따라서 %s를 기준으로 생활 리듬, 일의 방식, 관계의 속도를 조율하는 것이 좋습니다.")
+                .formatted(
+                        season.label(),
+                        season.element(),
+                        season.elementMeaning(),
+                        timeEnergy.label(),
+                        timeEnergy.elementSupport(),
+                        calendarTone
+                );
+    }
+
+    private List<String> buildStrengths(SeasonType season, TimeEnergyType timeEnergy) {
+        return List.of(
+                season.strength(),
+                timeEnergy.strength(),
+                "%s과 %s을 함께 활용해 상황을 자기 방식으로 정리하는 힘".formatted(
+                        season.primaryTrait(),
+                        timeEnergy.primaryTrait()
+                )
+        );
+    }
+
+    private List<String> buildCautions(SeasonType season, TimeEnergyType timeEnergy) {
+        return List.of(
+                season.caution(),
+                timeEnergy.caution(),
+                "좋은 흐름을 느껴도 결정을 서두르기보다 기준, 일정, 감정 소모를 함께 점검하기"
+        );
+    }
+
+    private List<String> buildRecommendedQuestions(SeasonType season, TimeEnergyType timeEnergy) {
+        return List.of(
+                "%s을 살릴 수 있는 업무 방식은 무엇인가요?".formatted(season.primaryTrait()),
+                "제가 의사결정할 때 %s을 어떻게 보완하면 좋을까요?".formatted(timeEnergy.cautionKeyword()),
+                "%s와 잘 맞는 커리어 방향은 무엇인가요?".formatted(timeEnergy.primaryTrait())
         );
     }
 
     private String cacheKey(LocalDate birthDate, LocalTime birthTime, CalendarType calendarType, Gender gender) {
-        return "saju:profile:%s:%s:%s:%s".formatted(birthDate, birthTime, calendarType, gender);
+        return "saju:profile:v2:%s:%s:%s:%s".formatted(birthDate, birthTime, calendarType, gender);
+    }
+
+    private enum SeasonType {
+        SPRING(
+                "봄",
+                "성장과 시작",
+                "목",
+                "기획, 확장, 새로운 시도",
+                "성장 감각",
+                "아이디어를 빠르게 발견하고 가능성을 넓히는 힘",
+                "시작은 빠르지만 마무리 기준이 흐려질 수 있음"
+        ),
+        SUMMER(
+                "여름",
+                "표현과 추진",
+                "화",
+                "열정, 대외활동, 표현력",
+                "추진력",
+                "분위기를 만들고 사람 앞에서 에너지를 전달하는 힘",
+                "속도가 빨라질수록 세부 확인이 느슨해질 수 있음"
+        ),
+        AUTUMN(
+                "가을",
+                "정리와 성과",
+                "금",
+                "판단, 현실감, 결과 정리",
+                "현실 감각",
+                "복잡한 상황을 기준에 따라 정리하고 성과로 연결하는 힘",
+                "판단이 선명한 만큼 스스로와 타인에게 엄격해질 수 있음"
+        ),
+        WINTER(
+                "겨울",
+                "탐구와 축적",
+                "수",
+                "신중함, 내면 집중, 깊이 있는 탐색",
+                "탐구심",
+                "충분히 관찰하고 깊게 파고들어 본질을 찾는 힘",
+                "생각이 깊어질수록 실행 타이밍을 놓칠 수 있음"
+        );
+
+        private final String label;
+        private final String theme;
+        private final String element;
+        private final String elementMeaning;
+        private final String primaryTrait;
+        private final String strength;
+        private final String caution;
+
+        SeasonType(
+                String label,
+                String theme,
+                String element,
+                String elementMeaning,
+                String primaryTrait,
+                String strength,
+                String caution
+        ) {
+            this.label = label;
+            this.theme = theme;
+            this.element = element;
+            this.elementMeaning = elementMeaning;
+            this.primaryTrait = primaryTrait;
+            this.strength = strength;
+            this.caution = caution;
+        }
+
+        String label() {
+            return label;
+        }
+
+        String theme() {
+            return theme;
+        }
+
+        String element() {
+            return element;
+        }
+
+        String elementMeaning() {
+            return elementMeaning;
+        }
+
+        String primaryTrait() {
+            return primaryTrait;
+        }
+
+        String strength() {
+            return strength;
+        }
+
+        String caution() {
+            return caution;
+        }
+    }
+
+    private enum TimeEnergyType {
+        DAWN(
+                "새벽",
+                "관찰력과 내면 집중",
+                "관찰력",
+                "조용히 흐름을 읽고 리스크를 먼저 감지하는 힘",
+                "혼자 오래 판단하다가 표현이 늦어질 수 있음",
+                "생각을 밖으로 꺼내는 타이밍",
+                "깊이 있는 분석"
+        ),
+        MORNING(
+                "오전",
+                "계획성과 시작 에너지",
+                "실행력",
+                "계획을 세우고 초반 추진력을 만드는 힘",
+                "계획이 어긋날 때 유연성이 떨어질 수 있음",
+                "계획 변경에 대한 유연성",
+                "계획형 실행"
+        ),
+        AFTERNOON(
+                "오후",
+                "대인관계와 활동성",
+                "소통력",
+                "사람들과 맞물려 움직이며 기회를 넓히는 힘",
+                "외부 반응에 따라 에너지 소모가 커질 수 있음",
+                "관계 속 에너지 소모",
+                "협업과 커뮤니케이션"
+        ),
+        NIGHT(
+                "저녁/밤",
+                "몰입과 깊이 있는 사고",
+                "몰입력",
+                "한 가지 주제를 오래 붙잡고 완성도를 높이는 힘",
+                "몰입이 깊어질수록 휴식과 전환이 늦어질 수 있음",
+                "휴식과 전환의 균형",
+                "전문성 강화"
+        );
+
+        private final String label;
+        private final String theme;
+        private final String primaryTrait;
+        private final String strength;
+        private final String caution;
+        private final String cautionKeyword;
+        private final String elementSupport;
+
+        TimeEnergyType(
+                String label,
+                String theme,
+                String primaryTrait,
+                String strength,
+                String caution,
+                String cautionKeyword,
+                String elementSupport
+        ) {
+            this.label = label;
+            this.theme = theme;
+            this.primaryTrait = primaryTrait;
+            this.strength = strength;
+            this.caution = caution;
+            this.cautionKeyword = cautionKeyword;
+            this.elementSupport = elementSupport;
+        }
+
+        String label() {
+            return label;
+        }
+
+        String theme() {
+            return theme;
+        }
+
+        String primaryTrait() {
+            return primaryTrait;
+        }
+
+        String strength() {
+            return strength;
+        }
+
+        String caution() {
+            return caution;
+        }
+
+        String cautionKeyword() {
+            return cautionKeyword;
+        }
+
+        String elementSupport() {
+            return elementSupport;
+        }
+
+        String decisionHint() {
+            return cautionKeyword;
+        }
     }
 }

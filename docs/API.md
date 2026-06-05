@@ -99,15 +99,21 @@ Authorization: Bearer {accessToken}
   "calendarType": "SOLAR",
   "gender": "FEMALE",
   "birthPlace": "Seoul",
-  "analysisSummary": "양력 기준 입력으로 볼 때...",
-  "elementSummary": "현재 MVP 분석에서는...",
-  "strengths": ["상황을 빠르게 정리하는 힘"],
-  "cautions": ["혼자 감당하려는 습관"],
-  "recommendedQuestions": ["올해 일과 관계에서 가장 신경 써야 할 부분은?"],
+  "analysisSummary": "양력 기준의 현실적 흐름을 중심으로 보면, 봄의 성장과 시작 성향과 오전의 계획성과 시작 에너지가 함께 드러납니다...",
+  "elementSummary": "MVP 규칙 기반 분석에서는 생월을 계절 오행의 흐름으로 해석합니다...",
+  "strengths": ["아이디어를 빠르게 발견하고 가능성을 넓히는 힘"],
+  "cautions": ["시작은 빠르지만 마무리 기준이 흐려질 수 있음"],
+  "recommendedQuestions": ["성장 감각을 살릴 수 있는 업무 방식은 무엇인가요?"],
   "createdAt": "2026-06-04T15:00:00",
   "updatedAt": "2026-06-04T15:00:00"
 }
 ```
+
+분석 결과 참고:
+
+- 현재는 완전한 만세력 계산이 아니라 MVP용 규칙 기반 분석입니다.
+- 생월, 출생시간, 양력/음력 선택값을 기반으로 기본 성향과 추천 질문을 생성합니다.
+- 향후 실제 만세력, 오행, 십성, 대운/세운 계산으로 확장할 수 있는 구조입니다.
 
 ### GET `/api/profiles`
 
@@ -125,11 +131,11 @@ Authorization: Bearer {accessToken}
     "calendarType": "SOLAR",
     "gender": "FEMALE",
     "birthPlace": "Seoul",
-    "analysisSummary": "양력 기준 입력으로 볼 때...",
-    "elementSummary": "현재 MVP 분석에서는...",
-    "strengths": ["상황을 빠르게 정리하는 힘"],
-    "cautions": ["혼자 감당하려는 습관"],
-    "recommendedQuestions": ["올해 일과 관계에서 가장 신경 써야 할 부분은?"],
+    "analysisSummary": "양력 기준의 현실적 흐름을 중심으로 보면...",
+    "elementSummary": "MVP 규칙 기반 분석에서는...",
+    "strengths": ["아이디어를 빠르게 발견하고 가능성을 넓히는 힘"],
+    "cautions": ["시작은 빠르지만 마무리 기준이 흐려질 수 있음"],
+    "recommendedQuestions": ["성장 감각을 살릴 수 있는 업무 방식은 무엇인가요?"],
     "createdAt": "2026-06-04T15:00:00",
     "updatedAt": "2026-06-04T15:00:00"
   }
