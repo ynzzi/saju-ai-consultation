@@ -9,4 +9,6 @@ public interface AiConsultationRepository extends JpaRepository<AiConsultation, 
     List<AiConsultation> findAllByUserIdAndProfileIdOrderByCreatedAtDesc(Long userId, Long profileId);
 
     List<AiConsultation> findTop5ByUserIdAndProfileIdOrderByCreatedAtDesc(Long userId, Long profileId);
+
+    void deleteAllByUserIdAndProfileId(Long userId, Long profileId);
 }

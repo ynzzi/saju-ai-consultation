@@ -2,6 +2,7 @@ package com.portfolio.saju.profile.service;
 
 import com.portfolio.saju.common.exception.BusinessException;
 import com.portfolio.saju.common.exception.ErrorCode;
+import com.portfolio.saju.consultation.repository.AiConsultationRepository;
 import com.portfolio.saju.profile.domain.SajuProfile;
 import com.portfolio.saju.profile.dto.CreateSajuProfileRequest;
 import com.portfolio.saju.profile.dto.SajuAnalysisResult;
@@ -21,6 +22,7 @@ public class SajuProfileService {
     private final UserRepository userRepository;
     private final SajuProfileRepository sajuProfileRepository;
     private final SajuAnalysisService sajuAnalysisService;
+    private final AiConsultationRepository aiConsultationRepository;
 
     @Transactional
     public SajuProfileResponse create(Long userId, CreateSajuProfileRequest request) {
@@ -67,6 +69,7 @@ public class SajuProfileService {
     @Transactional
     public void delete(Long userId, Long profileId) {
         SajuProfile profile = findOwnedProfile(userId, profileId);
+        aiConsultationRepository.deleteAllByUserIdAndProfileId(userId, profileId);
         sajuProfileRepository.delete(profile);
     }
 

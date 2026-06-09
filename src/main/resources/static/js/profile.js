@@ -163,6 +163,8 @@ function bindDeleteButton(profileId) {
         }
 
         clearError();
+        clearSuccess();
+        setButtonLoading(deleteButton, true, "삭제 중");
         try {
             await apiFetch("/api/profiles/" + profileId, {
                 method: "DELETE"
@@ -170,6 +172,7 @@ function bindDeleteButton(profileId) {
             window.location.href = "/view/profiles";
         } catch (error) {
             showError(error.message || "프로필 삭제에 실패했습니다.");
+            setButtonLoading(deleteButton, false, "삭제");
         }
     });
 }
