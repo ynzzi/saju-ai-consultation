@@ -8,5 +8,11 @@ import java.time.LocalTime;
 
 public interface SajuAnalysisService {
 
-    SajuAnalysisResult analyze(LocalDate birthDate, LocalTime birthTime, CalendarType calendarType, Gender gender);
+    SajuAnalysisResult analyze(
+            LocalDate birthDate,
+            LocalTime birthTime,
+            CalendarType calendarType,
+            Gender gender,
+            boolean leapMonth
+    );
 }

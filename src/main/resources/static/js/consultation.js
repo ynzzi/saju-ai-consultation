@@ -36,8 +36,19 @@ function renderConsultationProfile(profile) {
     setText("birthTime", profile.birthTime);
     setText("calendarType", formatCalendarType(profile.calendarType));
     setText("gender", formatGender(profile.gender));
-    setText("analysisSummary", profile.analysisSummary);
+    setText("pillarSummary", formatPillarSummary(profile));
+    setText("fiveElementsSummary", formatInlineSummary(profile.fiveElementsSummary));
+    setText("yinYangSummary", formatInlineSummary(profile.yinYangSummary));
+    setText("analysisSummary", sanitizeDisplayText(profile.analysisSummary));
+    setText("calculationWarning", sanitizeDisplayText(profile.calculationWarning));
     renderRecommendedQuestionButtons(profile.recommendedQuestions);
+}
+
+function formatPillarSummary(profile) {
+    if (!profile.yearPillar || !profile.monthPillar || !profile.dayPillar || !profile.hourPillar) {
+        return "사주 정보를 계산 중입니다.";
+    }
+    return `${profile.yearPillar} / ${profile.monthPillar} / ${profile.dayPillar} / ${profile.hourPillar}`;
 }
 
 function renderConsultations(consultations) {
@@ -192,6 +203,9 @@ function bindProfileLink(profileId) {
 
 function renderRecommendedQuestionButtons(values) {
     const container = document.getElementById("recommendedQuestions");
+    if (!container) {
+        return;
+    }
     container.innerHTML = "";
 
     (values || []).forEach((value) => {
@@ -224,6 +238,25 @@ function setText(id, value) {
     if (element) {
         element.textContent = value || "";
     }
+}
+
+function formatInlineSummary(values) {
+    const items = values || [];
+    if (items.length === 0) {
+        return "사주 정보를 계산 중입니다.";
+    }
+    return items.map((value) => value.replace(": ", " ")).join(" · ");
+}
+
+function sanitizeDisplayText(value) {
+    if (!value) {
+        return "";
+    }
+
+    return value
+            .replaceAll("MVP 만세력 계산", "기본 계산")
+            .replaceAll("MVP 계산", "기본 계산")
+            .replaceAll("MVP", "기본");
 }
 
 function getConsultationProfileIdFromPath() {

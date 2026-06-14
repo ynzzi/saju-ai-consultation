@@ -14,6 +14,10 @@ public record CreateSajuProfileRequest(
         @NotNull LocalTime birthTime,
         @NotNull CalendarType calendarType,
         @NotNull Gender gender,
-        @Size(max = 120) String birthPlace
+        @Size(max = 120) String birthPlace,
+        Boolean leapMonth
 ) {
+    public boolean leapMonthValue() {
+        return Boolean.TRUE.equals(leapMonth);
+    }
 }

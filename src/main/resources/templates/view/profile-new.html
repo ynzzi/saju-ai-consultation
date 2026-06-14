@@ -17,8 +17,10 @@
 
 <main class="page-shell narrow">
     <section class="panel">
-        <div class="page-heading compact">
-            <h1>프로필 등록</h1>
+            <div class="page-heading compact">
+                <span class="eyebrow">New Profile</span>
+                <h1>프로필 등록</h1>
+                <p>생년월일과 출생시간을 입력하면 현재 입력값 기준의 사주 풀이가 생성됩니다.</p>
         </div>
 
         <form id="profileForm" class="form-stack">
@@ -44,6 +46,10 @@
                         <option value="LUNAR">음력</option>
                     </select>
                 </label>
+                <label id="leapMonthField" class="checkbox-label" hidden>
+                    <input type="checkbox" id="leapMonth">
+                    음력 윤달
+                </label>
                 <label>
                     성별
                     <select id="gender" required>
@@ -52,12 +58,11 @@
                     </select>
                 </label>
             </div>
-            <label>
-                출생지역
-                <input type="text" id="birthPlace" maxlength="120" placeholder="Seoul">
-            </label>
             <p id="errorMessage" class="error-message" hidden></p>
-            <button type="submit" class="primary-button">등록</button>
+            <div class="form-actions">
+                <a class="ghost-button" href="/view/profiles">취소</a>
+                <button type="submit" class="primary-button">등록</button>
+            </div>
         </form>
     </section>
 </main>

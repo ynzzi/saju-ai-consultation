@@ -95,7 +95,7 @@ public class OpenAiClient implements AiClient {
                 선택된 사주 프로필:
                 %s
 
-                기본 분석 결과:
+                사주 풀이 결과:
                 %s
 
                 이전 상담 일부:

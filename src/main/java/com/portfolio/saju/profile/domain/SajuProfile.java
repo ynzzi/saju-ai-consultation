@@ -54,6 +54,9 @@ public class SajuProfile extends BaseTimeEntity {
     @Column(length = 120)
     private String birthPlace;
 
+    @Column
+    private Boolean leapMonth;
+
     @Column(nullable = false, length = 1000)
     private String analysisSummary;
 
@@ -69,6 +72,33 @@ public class SajuProfile extends BaseTimeEntity {
     @Column(nullable = false, length = 1000)
     private String recommendedQuestions;
 
+    @Column(length = 20)
+    private String yearPillar;
+
+    @Column(length = 20)
+    private String monthPillar;
+
+    @Column(length = 20)
+    private String dayPillar;
+
+    @Column(length = 20)
+    private String hourPillar;
+
+    @Column(length = 1000)
+    private String fiveElementsSummary;
+
+    @Column(length = 1000)
+    private String yinYangSummary;
+
+    @Column(length = 1000)
+    private String calculationStandard;
+
+    @Column(length = 1000)
+    private String calculationWarning;
+
+    @Column(length = 60)
+    private String manseCalendarVersion;
+
     @Builder
     private SajuProfile(
             User user,
@@ -78,11 +108,21 @@ public class SajuProfile extends BaseTimeEntity {
             CalendarType calendarType,
             Gender gender,
             String birthPlace,
+            Boolean leapMonth,
             String analysisSummary,
             String elementSummary,
             String strengths,
             String cautions,
-            String recommendedQuestions
+            String recommendedQuestions,
+            String yearPillar,
+            String monthPillar,
+            String dayPillar,
+            String hourPillar,
+            String fiveElementsSummary,
+            String yinYangSummary,
+            String calculationStandard,
+            String calculationWarning,
+            String manseCalendarVersion
     ) {
         this.user = user;
         this.profileName = profileName;
@@ -91,11 +131,21 @@ public class SajuProfile extends BaseTimeEntity {
         this.calendarType = calendarType;
         this.gender = gender;
         this.birthPlace = birthPlace;
+        this.leapMonth = leapMonth;
         this.analysisSummary = analysisSummary;
         this.elementSummary = elementSummary;
         this.strengths = strengths;
         this.cautions = cautions;
         this.recommendedQuestions = recommendedQuestions;
+        this.yearPillar = yearPillar;
+        this.monthPillar = monthPillar;
+        this.dayPillar = dayPillar;
+        this.hourPillar = hourPillar;
+        this.fiveElementsSummary = fiveElementsSummary;
+        this.yinYangSummary = yinYangSummary;
+        this.calculationStandard = calculationStandard;
+        this.calculationWarning = calculationWarning;
+        this.manseCalendarVersion = manseCalendarVersion;
     }
 
     public void updateAnalysis(
@@ -103,12 +153,30 @@ public class SajuProfile extends BaseTimeEntity {
             String elementSummary,
             String strengths,
             String cautions,
-            String recommendedQuestions
+            String recommendedQuestions,
+            String yearPillar,
+            String monthPillar,
+            String dayPillar,
+            String hourPillar,
+            String fiveElementsSummary,
+            String yinYangSummary,
+            String calculationStandard,
+            String calculationWarning,
+            String manseCalendarVersion
     ) {
         this.analysisSummary = analysisSummary;
         this.elementSummary = elementSummary;
         this.strengths = strengths;
         this.cautions = cautions;
         this.recommendedQuestions = recommendedQuestions;
+        this.yearPillar = yearPillar;
+        this.monthPillar = monthPillar;
+        this.dayPillar = dayPillar;
+        this.hourPillar = hourPillar;
+        this.fiveElementsSummary = fiveElementsSummary;
+        this.yinYangSummary = yinYangSummary;
+        this.calculationStandard = calculationStandard;
+        this.calculationWarning = calculationWarning;
+        this.manseCalendarVersion = manseCalendarVersion;
     }
 }

@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     bindLogoutButton();
     bindProfileForm();
+    bindCalendarTypeToggle();
 
     if (document.getElementById("profilesContainer")) {
         loadProfiles();
@@ -69,7 +70,9 @@ function bindProfileForm() {
                     birthTime: normalizeTime(document.getElementById("birthTime").value),
                     calendarType: document.getElementById("calendarType").value,
                     gender: document.getElementById("gender").value,
-                    birthPlace: document.getElementById("birthPlace").value.trim()
+                    birthPlace: optionalInputValue("birthPlace"),
+                    leapMonth: document.getElementById("calendarType").value === "LUNAR"
+                            && document.getElementById("leapMonth").checked
                 })
             });
             window.location.href = "/view/profiles/" + profile.id;
@@ -141,10 +144,17 @@ function renderProfileDetail(profile) {
     setText("birthDate", profile.birthDate);
     setText("birthTime", profile.birthTime);
     setText("calendarType", formatCalendarType(profile.calendarType));
+    setText("leapMonth", profile.leapMonth ? "윤달" : "아님");
     setText("gender", formatGender(profile.gender));
-    setText("birthPlace", profile.birthPlace || "-");
-    setText("analysisSummary", profile.analysisSummary);
-    setText("elementSummary", profile.elementSummary);
+    setText("birthPlace", profile.birthPlace || "");
+    setText("yearPillar", displayCalculatedValue(profile.yearPillar));
+    setText("monthPillar", displayCalculatedValue(profile.monthPillar));
+    setText("dayPillar", displayCalculatedValue(profile.dayPillar));
+    setText("hourPillar", displayCalculatedValue(profile.hourPillar));
+    renderList("fiveElementsSummary", profile.fiveElementsSummary, "계산 정보를 불러오지 못했습니다.");
+    renderList("yinYangSummary", profile.yinYangSummary, "계산 정보를 불러오지 못했습니다.");
+    setText("analysisSummary", sanitizeDisplayText(profile.analysisSummary));
+    setText("elementSummary", sanitizeDisplayText(profile.elementSummary));
     renderList("strengths", profile.strengths);
     renderList("cautions", profile.cautions);
     renderRecommendedQuestionLinks(profile.id, profile.recommendedQuestions);
@@ -177,6 +187,27 @@ function bindDeleteButton(profileId) {
     });
 }
 
+function bindCalendarTypeToggle() {
+    const calendarType = document.getElementById("calendarType");
+    const leapMonthField = document.getElementById("leapMonthField");
+    const leapMonth = document.getElementById("leapMonth");
+    if (!calendarType || !leapMonthField || !leapMonth) {
+        return;
+    }
+
+    const sync = () => {
+        const isLunar = calendarType.value === "LUNAR";
+        leapMonthField.hidden = !isLunar;
+        leapMonth.disabled = !isLunar;
+        if (!isLunar) {
+            leapMonth.checked = false;
+        }
+    };
+
+    calendarType.addEventListener("change", sync);
+    sync();
+}
+
 function getProfileIdFromPath() {
     const segments = window.location.pathname.split("/").filter(Boolean);
     return segments[segments.length - 1];
@@ -189,11 +220,22 @@ function setText(id, value) {
     }
 }
 
-function renderList(id, values) {
+function renderList(id, values, fallbackMessage = "") {
     const list = document.getElementById(id);
+    if (!list) {
+        return;
+    }
     list.innerHTML = "";
 
-    (values || []).forEach((value) => {
+    const items = values || [];
+    if (items.length === 0 && fallbackMessage) {
+        const item = document.createElement("li");
+        item.textContent = fallbackMessage;
+        list.appendChild(item);
+        return;
+    }
+
+    items.forEach((value) => {
         const item = document.createElement("li");
         item.textContent = value;
         list.appendChild(item);
@@ -202,6 +244,9 @@ function renderList(id, values) {
 
 function renderRecommendedQuestionLinks(profileId, values) {
     const container = document.getElementById("recommendedQuestions");
+    if (!container) {
+        return;
+    }
     container.innerHTML = "";
 
     (values || []).forEach((value) => {
@@ -234,6 +279,31 @@ function clearSuccess() {
 function setButtonLoading(button, isLoading, text) {
     button.disabled = isLoading;
     button.textContent = text;
+}
+
+function optionalInputValue(id) {
+    const input = document.getElementById(id);
+    if (!input) {
+        return null;
+    }
+
+    const value = input.value.trim();
+    return value || null;
+}
+
+function displayCalculatedValue(value) {
+    return value || "계산 정보를 불러오지 못했습니다.";
+}
+
+function sanitizeDisplayText(value) {
+    if (!value) {
+        return "";
+    }
+
+    return value
+            .replaceAll("MVP 만세력 계산", "기본 계산")
+            .replaceAll("MVP 계산", "기본 계산")
+            .replaceAll("MVP", "기본");
 }
 
 function escapeHtml(value) {

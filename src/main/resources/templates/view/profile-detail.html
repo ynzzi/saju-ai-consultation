@@ -38,12 +38,12 @@
                     <dd id="calendarType"></dd>
                 </div>
                 <div>
-                    <dt>성별</dt>
-                    <dd id="gender"></dd>
+                    <dt>윤달 여부</dt>
+                    <dd id="leapMonth"></dd>
                 </div>
                 <div>
-                    <dt>출생지역</dt>
-                    <dd id="birthPlace"></dd>
+                    <dt>성별</dt>
+                    <dd id="gender"></dd>
                 </div>
             </dl>
             <div class="button-row">
@@ -54,25 +54,64 @@
             </div>
         </article>
 
-        <article class="panel analysis-panel">
-            <h2>기본 분석</h2>
-            <section class="analysis-section">
-                <h3>기본 성향 요약</h3>
-                <p id="analysisSummary"></p>
+        <article class="panel fortune-reading-card">
+            <div class="section-title">
+                <h2>사주 풀이</h2>
+            </div>
+            <section class="reading-section pillar-section">
+                <h3>사주팔자</h3>
+                <dl class="pillar-grid">
+                    <div>
+                        <dt>년주</dt>
+                        <dd id="yearPillar"></dd>
+                    </div>
+                    <div>
+                        <dt>월주</dt>
+                        <dd id="monthPillar"></dd>
+                    </div>
+                    <div>
+                        <dt>일주</dt>
+                        <dd id="dayPillar"></dd>
+                    </div>
+                    <div>
+                        <dt>시주</dt>
+                        <dd id="hourPillar"></dd>
+                    </div>
+                </dl>
             </section>
-            <section class="analysis-section">
-                <h3>오행 요약</h3>
-                <p id="elementSummary"></p>
+
+            <div class="reading-grid">
+                <section class="reading-section element-section">
+                    <h3>오행 분포</h3>
+                    <ul id="fiveElementsSummary"></ul>
+                </section>
+                <section class="reading-section yinyang-section">
+                    <h3>음양 분포</h3>
+                    <ul id="yinYangSummary"></ul>
+                </section>
+            </div>
+
+            <section class="reading-section interpretation-section">
+                <h3>풀이 내용</h3>
+                <div class="reading-copy">
+                    <h4>성향 요약</h4>
+                    <p id="analysisSummary"></p>
+                    <h4>오행/에너지 조언</h4>
+                    <p id="elementSummary"></p>
+                </div>
+                <div class="reading-grid">
+                    <div>
+                        <h4>강점</h4>
+                        <ul id="strengths"></ul>
+                    </div>
+                    <div>
+                        <h4>주의점</h4>
+                        <ul id="cautions"></ul>
+                    </div>
+                </div>
             </section>
-            <section class="analysis-section">
-                <h3>강점</h3>
-                <ul id="strengths"></ul>
-            </section>
-            <section class="analysis-section">
-                <h3>주의점</h3>
-                <ul id="cautions"></ul>
-            </section>
-            <section class="analysis-section">
+
+            <section class="reading-section question-section">
                 <h3>추천 질문</h3>
                 <div id="recommendedQuestions" class="question-chip-group"></div>
             </section>

@@ -66,6 +66,7 @@ public class AiConsultationService {
                 생년월일: %s
                 출생시간: %s
                 달력: %s
+                윤달: %s
                 성별: %s
                 출생지: %s
                 """.formatted(
@@ -73,6 +74,7 @@ public class AiConsultationService {
                 profile.getBirthDate(),
                 profile.getBirthTime(),
                 profile.getCalendarType(),
+                Boolean.TRUE.equals(profile.getLeapMonth()) ? "Y" : "N",
                 profile.getGender(),
                 profile.getBirthPlace() == null ? "" : profile.getBirthPlace()
         );
@@ -81,17 +83,34 @@ public class AiConsultationService {
     private String analysisContext(SajuProfile profile) {
         return """
                 기본 성향: %s
+                사주팔자: 년주 %s, 월주 %s, 일주 %s, 시주 %s
+                오행 분포: %s
+                음양 분포: %s
                 오행 요약: %s
                 강점: %s
                 주의점: %s
                 추천 질문: %s
+                계산 기준: %s
+                계산 한계: %s
                 """.formatted(
                 profile.getAnalysisSummary(),
+                nullToDash(profile.getYearPillar()),
+                nullToDash(profile.getMonthPillar()),
+                nullToDash(profile.getDayPillar()),
+                nullToDash(profile.getHourPillar()),
+                nullToDash(profile.getFiveElementsSummary()),
+                nullToDash(profile.getYinYangSummary()),
                 profile.getElementSummary(),
                 profile.getStrengths(),
                 profile.getCautions(),
-                profile.getRecommendedQuestions()
+                profile.getRecommendedQuestions(),
+                nullToDash(profile.getCalculationStandard()),
+                nullToDash(profile.getCalculationWarning())
         );
+    }
+
+    private String nullToDash(String value) {
+        return value == null || value.isBlank() ? "-" : value;
     }
 
     private String historyContext(List<AiConsultation> histories) {
